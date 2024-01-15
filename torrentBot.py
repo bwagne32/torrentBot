@@ -42,7 +42,7 @@ bot.remove_command('help')
 
 
 @tasks.loop(minutes=5)
-async def notify():
+async def notify(): # Checks for completed torrents to notify in discord
     await bot.wait_until_ready()  # Wait until the bot is ready
     str = qbt_client.torrents_info(status_filter='completed', tag='')
     
@@ -58,14 +58,11 @@ async def notify():
             if len(printStr) > 1000:
                 printStr = '```COMPLETED:\n'
         printStr +='```'
-        #print(printStr)
-        
-        #print(filtered_hashes)
+ 
         qbt_client.torrents_add_tags(tags='notify', torrent_hashes=filtered_hashes)
         await bot.get_channel(1164987769316192336).send(printStr)
     else:
         print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + '| No new downloads')
-    #await asyncio.sleep(1)  # 30 minutes (30 * 60 seconds)
 @bot.group(invoke_without_command=True)
 async def help(ctx):
     em = discord.Embed(title="Help", description='Use !help <command> for extended information on a specific command.')
@@ -94,11 +91,6 @@ async def is_owner(ctx):
 @bot.command(aliases=['toradd', 'addtorrent', 'torrentadd', 'add'])
 @commands.check(is_owner)
 async def addtor(ctx, torHash, loc):
-    '''if(ctx.author.id != 337680810054516736): # don't allow other users
-        await ctx.send("Invalid user")
-        print("Ignoring request from " + ctx.author.global_name)
-        return
-        ''' 
     print('Adding torrent with hash', torHash, 'to qBitTorrent downloads...')
     cli = qbt_client
 
@@ -131,7 +123,6 @@ async def addtor(ctx, torHash, loc):
         print("bruh")
     
     
-    
 @help.command()
 async def addtor(ctx):
     em = discord.Embed(title='Add Torrent', description='Takes a torrent hash and save path from the user and starts downloading the contents to the host PC. <torHash> should be a valid torrent info hash, and <directory> should be a valid directory on the host PC.', color=ctx.author.color)
@@ -146,7 +137,7 @@ async def addtor(ctx):
 
 @bot.command(aliases=['ct','checktorrent','check'])
 @commands.check(is_owner)
-async def checktor(ctx, name):
+async def checktor(ctx, name): # check status of torrent based on name
     cli = qbt_client
     torStr = cli.torrents_info()
     #filtered_torrents = [torrent['name'] for torrent in sendStr]
@@ -158,11 +149,6 @@ async def checktor(ctx, name):
         sendStr[2 * i + 1] = '``````'
 
     
-    #print(filtered_torrents)
-    #prog =  [torrent['progress'] for torrent in filtered_torrents]
-    #print(sendStr)
-    #print([torrent['progress'] for torrent in sendStr])
-    #print(prog)
     await ctx.channel.send(f"```Progress for search: {name}``````{sendStr}```")
     #await ctx.channel.send(f"```Progress for search: {name}\n{filtered_torrents[0]}: {filtered_torrents[1]}%```")
 @help.command()
