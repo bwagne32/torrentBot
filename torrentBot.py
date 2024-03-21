@@ -12,7 +12,7 @@ import sys
 conn_info = dict(
     host="127.0.0.1",
     port=8080,
-    #username="admin",
+    #username="admin", # enable auth connections from localhost in the ui
     #password="adminadmin",
 )
 qbt_client = qbittorrentapi.Client(**conn_info)
@@ -265,7 +265,8 @@ async def down(ctx,downloadStr):
 # Non torrent stuff ######################################################################3
 @bot.command()
 async def yt(ctx,URL): # Youtube downloader
-    cmd = "yt-dlp_linux -P /home/void/ram -o vid "
+    path = "/home/void/ram/"
+    cmd = "yt-dlp -P " + path + " -o vid.webm "
     cmd = cmd + str(URL)
     try:
         subprocess.run(cmd,shell=True)
